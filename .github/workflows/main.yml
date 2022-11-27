@@ -1,0 +1,38 @@
+name: "Daily Fudan"
+
+on:
+  workflow_dispatch:
+
+env:
+  RUN_ENV: 'prod'
+  TZ: 'Asia/Shanghai'
+  FUCK_GH_PAT: ${{ secrets.GH_PAT }}
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # if: github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Checkout master with GH_PAT
+        if: ${{ env.FUCK_GH_PAT }}
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+          ref: main
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Checkout master without GH_PAT
+        if: ${{ !env.FUCK_GH_PAT }}
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Set up python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: run.py
+        run: python3 ./run.py
